@@ -54,7 +54,7 @@
     @apply border-0;
   }
   body {
-    @apply text-foreground;
     background-color: white;
+    color: #171717;
   }
 }
