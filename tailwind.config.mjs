@@ -8,11 +8,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+        },
+        input: {
+          DEFAULT: 'hsl(var(--input))',
+        },
+        ring: {
+          DEFAULT: 'hsl(var(--ring))',
+        },
+        background: {
+          DEFAULT: 'hsl(var(--background))',
+        },
+        foreground: {
+          DEFAULT: 'hsl(var(--foreground))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
