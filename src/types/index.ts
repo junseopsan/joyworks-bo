@@ -71,11 +71,9 @@ export interface HelpfulMark {
 export interface Notification {
   id: string
   user_id: string
-  type: 'answer' | 'comment' | 'accept' | 'helpful'
   title: string
   content: string
   link: string
   is_read: boolean
   created_at: string
-  user?: Profile
 } 
