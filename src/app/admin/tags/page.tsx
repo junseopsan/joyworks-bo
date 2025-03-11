@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { MainLayout } from '@/components/layout/main-layout'
-import { TagList } from '@/components/tags/tag-list'
-import { TagForm } from '@/components/tags/tag-form'
+import { TagList } from '@/components/admin/tag-list'
+import { TagForm } from '@/components/admin/tag-form'
 import { supabase } from '@/lib/supabase'
 
 export const metadata: Metadata = {
@@ -28,7 +28,10 @@ export default async function TagsPage() {
 
   const { data: tags } = await supabase
     .from('tags')
-    .select('*, questions:question_tags(count)')
+    .select(`
+      *,
+      questions:question_tags(count)
+    `)
     .order('name')
 
   return (
@@ -38,9 +41,13 @@ export default async function TagsPage() {
           <h1 className="text-3xl font-bold">태그 관리</h1>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-[1fr_300px]">
-          <TagList initialTags={tags || []} />
-          <TagForm />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <TagList tags={tags || []} />
+          </div>
+          <div>
+            <TagForm />
+          </div>
         </div>
       </div>
     </MainLayout>
