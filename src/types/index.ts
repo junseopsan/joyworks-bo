@@ -5,6 +5,12 @@ export interface Profile {
   phone?: string
   department?: string
   isAdmin?: boolean
+  notification_preferences?: {
+    newAnswer: boolean
+    newComment: boolean
+    answerAccepted: boolean
+    answerHelpful: boolean
+  }
   created_at: string
   updated_at: string
 }
