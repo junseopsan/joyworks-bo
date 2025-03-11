@@ -43,6 +43,7 @@ export interface Answer {
   question?: Question
   comments?: Comment[]
   helpful_marks?: HelpfulMark[]
+  count?: number
 }
 
 export interface Comment {

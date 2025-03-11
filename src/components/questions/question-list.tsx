@@ -1,11 +1,10 @@
 'use client'
 
-import * as React from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Question } from '@/types'
-import { Pagination } from '@/components/ui/pagination'
 
 interface QuestionListProps {
   page: number
@@ -15,78 +14,78 @@ interface QuestionListProps {
   tag: string
 }
 
-export function QuestionList({
-  page,
-  sort,
-  filter,
-  search,
-  tag,
-}: QuestionListProps) {
+export function QuestionList({ page, sort, filter, search, tag }: QuestionListProps) {
   const router = useRouter()
-  const [questions, setQuestions] = React.useState<Question[]>([])
-  const [totalPages, setTotalPages] = React.useState(1)
-  const [isLoading, setIsLoading] = React.useState(true)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
 
-  React.useEffect(() => {
+  const ITEMS_PER_PAGE = 10
+
+  useEffect(() => {
     async function fetchQuestions() {
       setIsLoading(true)
 
       try {
         let query = supabase
           .from('questions')
-          .select(
-            `
+          .select(`
             *,
             author:profiles(*),
             answers(count),
             tags:question_tags(*)
-          `,
-            { count: 'exact' }
-          )
+          `)
 
-        // 검색어 필터링
+        // 검색어가 있는 경우
         if (search) {
-          query = query.or(
-            `title.ilike.%${search}%,content.ilike.%${search}%`
-          )
+          query = query.textSearch('title', search, {
+            type: 'websearch',
+            config: 'english',
+          })
         }
 
         // 태그 필터링
         if (tag) {
-          query = query.eq('question_tags.name', tag)
+          query = query.contains('tags', [{ name: tag }])
         }
 
-        // 상태 필터링
-        if (filter === 'unsolved') {
-          query = query.eq('is_solved', false)
-        } else if (filter === 'solved') {
-          query = query.eq('is_solved', true)
+        // 필터링
+        switch (filter) {
+          case 'no-answer':
+            query = query.eq('answers.count', 0)
+            break
+          case 'has-answer':
+            query = query.gt('answers.count', 0)
+            break
         }
 
         // 정렬
-        if (sort === 'latest') {
-          query = query.order('created_at', { ascending: false })
-        } else if (sort === 'oldest') {
-          query = query.order('created_at', { ascending: true })
-        } else if (sort === 'most_viewed') {
-          query = query.order('view_count', { ascending: false })
-        } else if (sort === 'most_answered') {
-          query = query.order('answers.count', { ascending: false })
+        switch (sort) {
+          case 'latest':
+            query = query.order('created_at', { ascending: false })
+            break
+          case 'oldest':
+            query = query.order('created_at', { ascending: true })
+            break
+          case 'most-viewed':
+            query = query.order('view_count', { ascending: false })
+            break
+          case 'most-answered':
+            query = query.order('answers.count', { ascending: false })
+            break
         }
 
         // 페이지네이션
-        const itemsPerPage = 10
-        const from = (page - 1) * itemsPerPage
-        const to = from + itemsPerPage - 1
+        const start = (page - 1) * ITEMS_PER_PAGE
+        const end = start + ITEMS_PER_PAGE - 1
+        query = query.range(start, end)
 
-        const { data, count, error } = await query.range(from, to)
+        const { data: questions, error, count } = await query
 
-        if (error) {
-          throw error
-        }
+        if (error) throw error
 
-        setQuestions(data as Question[])
-        setTotalPages(Math.ceil((count || 0) / itemsPerPage))
+        setQuestions(questions || [])
+        setTotalCount(count || 0)
       } catch (error) {
         console.error('Error fetching questions:', error)
       } finally {
@@ -97,50 +96,68 @@ export function QuestionList({
     fetchQuestions()
   }, [page, sort, filter, search, tag])
 
-  const handlePageChange = (newPage: number) => {
-    const searchParams = new URLSearchParams({
-      page: newPage.toString(),
-      sort,
-      filter,
-      ...(search && { search }),
-      ...(tag && { tag }),
-    })
-
-    router.push(`/questions?${searchParams.toString()}`)
-  }
-
   if (isLoading) {
-    return <div>로딩 중...</div>
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse space-y-3 rounded-lg border p-4"
+          >
+            <div className="h-4 w-3/4 bg-gray-200 rounded" />
+            <div className="h-4 w-1/2 bg-gray-200 rounded" />
+            <div className="flex gap-2">
+              {[...Array(3)].map((_, j) => (
+                <div
+                  key={j}
+                  className="h-6 w-16 bg-gray-200 rounded-full"
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   if (questions.length === 0) {
-    return <div>질문이 없습니다.</div>
+    return (
+      <div className="text-center py-8">
+        <h3 className="text-lg font-medium">질문을 찾을 수 없습니다</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          다른 검색어나 필터를 사용해보세요
+        </p>
+      </div>
+    )
   }
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4">
+      <div className="space-y-4">
         {questions.map((question) => (
           <Link
             key={question.id}
             href={`/questions/${question.id}`}
-            className="group relative rounded-lg border p-4 hover:border-foreground"
+            className="block rounded-lg border p-4 hover:border-foreground transition-colors"
           >
-            <h3 className="font-semibold text-foreground group-hover:underline">
-              {question.title}
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-              {question.content}
-            </p>
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">{question.title}</h3>
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {question.content}
+              </p>
+            </div>
+
             <div className="mt-4 flex items-center gap-x-4 text-sm text-muted-foreground">
               <span>{question.author?.name}</span>
               <span>조회 {question.view_count}</span>
-              <span>답변 {question.answers[0].count}</span>
+              <span>답변 {question.answers?.[0]?.count || 0}</span>
               <div className="flex gap-2">
                 {question.tags?.map((tag) => (
                   <span
                     key={tag.id}
-                    className="badge badge-secondary"
+                    className="inline-block bg-secondary px-2.5 py-0.5 rounded-full text-xs font-medium"
                   >
                     {tag.name}
                   </span>
@@ -151,11 +168,30 @@ export function QuestionList({
         ))}
       </div>
 
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          {[...Array(totalPages)].map((_, i) => {
+            const pageNumber = i + 1
+            const isCurrentPage = pageNumber === page
+            const href = new URL(window.location.href)
+            href.searchParams.set('page', pageNumber.toString())
+
+            return (
+              <Link
+                key={pageNumber}
+                href={href.toString()}
+                className={`inline-flex h-8 min-w-[2rem] items-center justify-center rounded-md border px-3 text-sm ${
+                  isCurrentPage
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'hover:bg-accent'
+                }`}
+              >
+                {pageNumber}
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 } 
