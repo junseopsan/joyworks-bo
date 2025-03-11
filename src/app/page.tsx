@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Question } from '@/types'
@@ -23,65 +22,6 @@ async function getPopularQuestions() {
 export default async function HomePage() {
   const popularQuestions = await getPopularQuestions()
 
-  return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-          사내 질문과 답변 플랫폼
-        </h1>
-        <p className="mt-6 text-base leading-7 text-muted-foreground">
-          동료들과 함께 지식을 공유하고 성장하세요
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Link href="/questions" className="btn btn-primary">
-            질문 목록 보기
-          </Link>
-          <Link href="/questions/new" className="btn btn-secondary">
-            질문하기
-          </Link>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">인기 질문</h2>
-        <div className="grid gap-4">
-          {popularQuestions.map((question) => (
-            <Link
-              key={question.id}
-              href={`/questions/${question.id}`}
-              className="group relative rounded-lg border p-4 hover:border-foreground"
-            >
-              <h3 className="font-semibold text-foreground group-hover:underline">
-                {question.title}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                {question.content}
-              </p>
-              <div className="mt-4 flex items-center gap-x-4 text-sm text-muted-foreground">
-                <span>{question.author?.name}</span>
-                <span>조회 {question.view_count}</span>
-                <span>답변 {question.answers[0].count}</span>
-                <div className="flex gap-2">
-                  {question.tags?.map((tag) => (
-                    <span
-                      key={tag.id}
-                      className="badge badge-secondary"
-                    >
-                      {tag.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-=======
-import Link from 'next/link';
-
-export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-b from-primary-50 to-secondary-50">
       <div className="max-w-4xl w-full bg-white rounded-xl shadow-lg overflow-hidden">
@@ -136,38 +76,42 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        
+
         <div className="bg-gray-50 p-6 border-t border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">주요 기능</h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600">
-            <li className="flex items-start">
-              <svg className="h-5 w-5 text-primary-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              질문 및 답변 작성
-            </li>
-            <li className="flex items-start">
-              <svg className="h-5 w-5 text-primary-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              댓글을 통한 추가 질문
-            </li>
-            <li className="flex items-start">
-              <svg className="h-5 w-5 text-primary-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              도움이 된 답변 표시
-            </li>
-            <li className="flex items-start">
-              <svg className="h-5 w-5 text-primary-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              유사 질문 추천
-            </li>
-          </ul>
+          <h3 className="text-lg font-medium text-gray-900 mb-3">인기 질문</h3>
+          <div className="grid gap-4">
+            {popularQuestions.map((question) => (
+              <Link
+                key={question.id}
+                href={`/questions/${question.id}`}
+                className="group relative rounded-lg border p-4 hover:border-foreground bg-white"
+              >
+                <h3 className="font-semibold text-foreground group-hover:underline">
+                  {question.title}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                  {question.content}
+                </p>
+                <div className="mt-4 flex items-center gap-x-4 text-sm text-muted-foreground">
+                  <span>{question.author?.name}</span>
+                  <span>조회 {question.view_count}</span>
+                  <span>답변 {question.answers[0].count}</span>
+                  <div className="flex gap-2">
+                    {question.tags?.map((tag) => (
+                      <span
+                        key={tag.id}
+                        className="inline-block bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </main>
-  );
->>>>>>> 77ef2f57fd5a1fd90913989b938bfec3da466817
+  )
 }

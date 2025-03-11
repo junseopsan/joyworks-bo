@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-=======
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,10 +10,21 @@ body {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-50: 217.2 91.2% 97.3%;
+    --primary-100: 214.3 94.6% 92.7%;
+    --primary-200: 213.3 96.9% 87.3%;
+    --primary-300: 211.7 96.4% 78.4%;
+    --primary-400: 213.1 93.9% 67.8%;
+    --primary-500: 217.2 91.2% 59.8%;
+    --primary-600: 221.2 83.2% 53.3%;
+    --primary-700: 224.3 76.3% 48%;
+    --primary-800: 226.4 71.4% 40.8%;
+    --primary-900: 226.7 70.7% 35.3%;
+    --primary-950: 229.7 84% 24.3%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 260 84% 56%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96.1%;
@@ -49,7 +33,7 @@ body {
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
 
@@ -60,9 +44,9 @@ body {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 260 84% 56%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -72,13 +56,13 @@ body {
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
 @layer base {
   * {
-    @apply border-0;
+    @apply border-border;
   }
   
   html, body {
@@ -86,44 +70,115 @@ body {
   }
   
   body {
-    background-color: #f8fafc;
-    color: #171717;
+    @apply bg-background text-foreground;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold;
+    font-weight: 600;
   }
   
   h1 {
-    @apply text-2xl md:text-3xl;
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
   }
   
   h2 {
-    @apply text-xl md:text-2xl;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    h2 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
   }
   
   h3 {
-    @apply text-lg md:text-xl;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    h3 {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
   }
   
   a {
-    @apply text-primary-600 hover:text-primary-700;
+    color: #0284c7;
+  }
+  
+  a:hover {
+    color: #0369a1;
   }
   
   button, [type='button'], [type='reset'], [type='submit'] {
-    @apply inline-flex items-center justify-center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
-  
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 px-4 py-2 rounded-md;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }
-  
+
   .btn-secondary {
-    @apply bg-secondary-600 text-white hover:bg-secondary-700 px-4 py-2 rounded-md;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-sm {
+    @apply h-9 rounded-md px-3;
+  }
+
+  .btn-lg {
+    @apply h-11 rounded-md px-8;
+  }
+
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .badge-secondary {
+    @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .badge-outline {
+    @apply text-foreground;
+  }
+
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 1rem;
   }
   
-  .card {
-    @apply bg-white rounded-lg shadow-sm p-4 md:p-6;
+  @media (min-width: 768px) {
+    .card {
+      padding: 1.5rem;
+    }
   }
->>>>>>> 77ef2f57fd5a1fd90913989b938bfec3da466817
 }
