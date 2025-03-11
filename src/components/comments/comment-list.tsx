@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
@@ -12,80 +12,73 @@ interface CommentListProps {
   parentId: string
 }
 
-export function CommentList({
-  comments = [],
-  parentType,
-  parentId,
-}: CommentListProps) {
+export function CommentList({ comments = [], parentType, parentId }: CommentListProps) {
   const router = useRouter()
-  const [isDeleting, setIsDeleting] = React.useState<string | null>(null)
-
-  const user = React.useMemo(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    return user
-  }, [])
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async (commentId: string) => {
-    if (!window.confirm('정말로 삭제하시겠습니까?')) {
+    if (!window.confirm('정말 삭제하시겠습니까?')) {
       return
     }
 
-    setIsDeleting(commentId)
+    setIsDeleting(true)
 
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        toast.error('로그인이 필요합니다')
+        return
+      }
+
       const { error } = await supabase
         .from('comments')
         .delete()
         .eq('id', commentId)
 
-      if (error) {
-        throw error
-      }
+      if (error) throw error
 
       toast.success('댓글이 삭제되었습니다')
       router.refresh()
     } catch (error) {
+      console.error('Error deleting comment:', error)
       toast.error('댓글 삭제에 실패했습니다')
-      console.error(error)
     } finally {
-      setIsDeleting(null)
+      setIsDeleting(false)
     }
   }
 
-  if (comments.length === 0) {
-    return <div className="text-sm text-muted-foreground">댓글이 없습니다.</div>
+  if (comments?.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        아직 댓글이 없습니다
+      </div>
+    )
   }
 
   return (
     <div className="space-y-4">
-      {comments.map((comment) => (
+      {comments?.map((comment) => (
         <div
           key={comment.id}
-          className="flex items-start justify-between gap-4 rounded-lg border p-4"
+          className="flex items-start justify-between gap-x-4 text-sm"
         >
-          <div className="space-y-1">
-            <div className="flex items-center gap-x-2 text-sm">
+          <div>
+            <div className="flex items-center gap-x-2">
               <span className="font-medium">{comment.author?.name}</span>
               <span className="text-muted-foreground">
-                {new Date(comment.created_at).toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {new Date(comment.created_at).toLocaleDateString()}
               </span>
             </div>
-            <p className="text-sm">{comment.content}</p>
+            <p className="mt-1">{comment.content}</p>
           </div>
-
-          {user?.id === comment.author_id && (
-            <button
-              onClick={() => handleDelete(comment.id)}
-              disabled={isDeleting === comment.id}
-              className="text-sm text-muted-foreground hover:text-red-500"
-            >
-              {isDeleting === comment.id ? '삭제 중...' : '삭제'}
-            </button>
-          )}
+          <button
+            onClick={() => handleDelete(comment.id)}
+            disabled={isDeleting}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            삭제
+          </button>
         </div>
       ))}
     </div>

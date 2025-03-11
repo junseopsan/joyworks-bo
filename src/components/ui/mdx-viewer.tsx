@@ -1,21 +1,31 @@
 'use client'
 
-import * as React from 'react'
-import { MDXEditor } from '@mdxeditor/editor'
+import { useEffect, useRef } from 'react'
+import { Viewer } from '@toast-ui/editor'
+import '@toast-ui/editor/dist/toastui-editor-viewer.css'
 
 interface MDXViewerProps {
   content: string
 }
 
 export function MDXViewer({ content }: MDXViewerProps) {
-  return (
-    <div className="prose prose-sm dark:prose-invert max-w-none">
-      <MDXEditor
-        markdown={content}
-        readOnly
-        contentEditableClassName="!bg-transparent !p-0"
-        plugins={[]}
-      />
-    </div>
-  )
+  const viewerRef = useRef<HTMLDivElement>(null)
+  const viewerInstanceRef = useRef<Viewer | null>(null)
+
+  useEffect(() => {
+    if (!viewerRef.current) return
+
+    const viewer = new Viewer({
+      el: viewerRef.current,
+      initialValue: content,
+    })
+
+    viewerInstanceRef.current = viewer
+
+    return () => {
+      viewer.destroy()
+    }
+  }, [content])
+
+  return <div ref={viewerRef} />
 } 
