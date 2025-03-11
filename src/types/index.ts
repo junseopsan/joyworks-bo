@@ -15,6 +15,7 @@ export interface Question {
   content: string
   author_id: string
   view_count: number
+  answer_count: number
   is_notice?: boolean
   created_at: string
   updated_at: string
@@ -76,4 +77,13 @@ export interface Notification {
   link: string
   is_read: boolean
   created_at: string
+}
+
+export interface Tag {
+  id: string
+  name: string
+  description?: string
+  created_at: string
+  updated_at: string
+  questions?: { count: number }[]
 } 
