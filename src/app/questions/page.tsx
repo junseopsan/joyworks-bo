@@ -4,6 +4,7 @@ import { QuestionList } from '@/components/questions/question-list'
 import { QuestionFilter } from '@/components/questions/question-filter'
 import { SearchInput } from '@/components/ui/search-input'
 import { supabase } from '@/lib/supabase'
+import type { QuestionTag } from '@/types'
 
 export const metadata: Metadata = {
   title: '질문 목록',
@@ -80,7 +81,7 @@ export default async function QuestionsPage({ searchParams }: PageProps) {
                   </span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {question.tags?.map((tag) => (
+                  {question.tags?.map((tag: QuestionTag) => (
                     <span
                       key={tag.id}
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"

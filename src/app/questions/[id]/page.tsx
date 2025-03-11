@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { QuestionDetail } from '@/components/questions/question-detail'
 import { AnswerList } from '@/components/questions/answer-list'
-import { AnswerForm } from '@/components/questions/answer-form'
+import AnswerForm from '@/components/questions/answer-form'
 import type { Question } from '@/types'
 
 interface PageProps {
